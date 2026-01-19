@@ -29,6 +29,7 @@
     "typescript": "^5.9.3"
   },
   "scripts": {
+   "dev": "ts-node --transpile-only src/server.ts",
    "build": "tsc",
    "start": "node dist/index.js",
    "postinstall": "prisma generate" 

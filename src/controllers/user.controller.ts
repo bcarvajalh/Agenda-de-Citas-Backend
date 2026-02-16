@@ -1,26 +1,36 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient,Role } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-
 const prisma = new PrismaClient();
+
 
 export const createUserController = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name, role } = req.body;
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: "Email, password y nombre son obligatorios" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        name,
+        role: role as Role 
       }
     });
 
-    res.status(201).json({ message: "Usuario creado", id: user.id });
+    res.status(201).json({ 
+      message: `Usuario ${user.role} creado con éxito`, 
+      id: user.id 
+    });
+
   } catch (error) {
-    res.status(400).json({ error: "El usuario ya existe o hubo un error" });
+    console.error(error);
+    res.status(400).json({ error: "El email ya está registrado o hubo un error de validación" });
   }
 };
 
@@ -78,20 +88,6 @@ export const deleteUser = async (req: Request, res: Response) => {
   const id = req.params.id as string; 
 
   try {
-    await prisma.task.deleteMany({
-      where: {
-        project: {
-          ownerId: id
-        }
-      }
-    });
-
-    await prisma.project.deleteMany({
-      where: {
-        ownerId: id
-      }
-    });
-
     await prisma.user.delete({
       where: { id: id },
     });
@@ -102,3 +98,4 @@ export const deleteUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "No se pudo eliminar el usuario", details: error.message });
   }
 };
+

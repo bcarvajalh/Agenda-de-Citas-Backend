@@ -56,9 +56,5 @@ Antes de configurar el proyecto, asegúrate de tener instalado:
 * `POST /api/auth/register` - Registro de nuevos usuarios.
 * `POST /api/auth/login` - Inicio de sesión y entrega de Token.
 
-### Usuarios (Requiere Admin)
-* `GET /api/users` - Lista todos los usuarios.
-* `DELETE /api/users/:id` - Elimina un usuario y sus registros asociados (en cascada).
-
 ---
 Desarrollado por Brayan Stiven Carvajal Hernandez - 2026

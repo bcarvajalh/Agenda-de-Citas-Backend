@@ -1,62 +1,48 @@
-
+// schema.prisma
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgresql" 
   url      = env("DATABASE_URL")
 }
 
 enum Role {
-  ADMIN
-  MANAGER
-  USER
-}
-
-enum TaskStatus {
-  TODO
-  WIP
-  DONE
+  MEDICO
+  PACIENTE
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
+  id        String   @id @default(uuid())
+  email     String   @unique
   password  String
-  role      Role      @default(USER)
-  projects  Project[]
-  tasks     Task[]    @relation("AssignedTasks")
-  createdAt DateTime  @default(now())
+  name      String
+  role      Role     @default(PACIENTE) // 
+  
+  // Relaciones para las citas 
+  appointmentsAsDoctor  Appointment[] @relation("DoctorAppointments")
+  appointmentsAsPatient Appointment[] @relation("PatientAppointments")
+
+  createdAt DateTime @default(now())
 }
 
-model Project {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  ownerId     String
-  owner       User     @relation(fields: [ownerId], references: [id])
-  tasks       Task[]
-  createdAt   DateTime @default(now())
-}
+model Appointment {
+  id        String   @id @default(uuid())
+  dateTime  DateTime // Fecha y hora de la cita [cite: 8]
+  
+  // Relación con el Paciente 
+  patientId String
+  patient   User     @relation("PatientAppointments", fields: [patientId], references: [id])
 
-model Task {
-  id          String     @id @default(uuid())
-  title       String
-  description String?
-  status      TaskStatus @default(TODO)
-  projectId   String
-  project     Project    @relation(fields: [projectId], references: [id])
-  assignedId  String?
-  assignedTo  User?      @relation("AssignedTasks", fields: [assignedId], references: [id])
-  tags        Tag[]
-  createdAt   DateTime   @default(now())
-}
+  // Relación con el Médico 
+  doctorId  String
+  doctor    User     @relation("DoctorAppointments", fields: [doctorId], references: [id])
 
-model Tag {
-  id    String @id @default(uuid())
-  name  String @unique
-  color String
-  tasks Task[]
+  status    String   @default("PENDIENTE") // CRUD: PENDIENTE, COMPLETADA, CANCELADA 
+  createdAt DateTime @default(now())
+
+  // Validación: Un médico no puede tener dos citas en el mismo instante [cite: 10]
+  @@unique([doctorId, dateTime]) 
 }

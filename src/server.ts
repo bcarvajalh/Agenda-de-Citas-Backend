@@ -1,18 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import userRoutes from './routes/user.routes';
-import taskRoutes from './routes/task.routes';
 import 'dotenv/config';
-import projectRoutes from './routes/project.routes';
+import appointmentRoutes from './routes/appointment.routes';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 app.use('/api/users', userRoutes);
-app.use('/api/projects', projectRoutes);
+app.use('/api/citas', appointmentRoutes);
 
-app.use('/api/tasks', taskRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

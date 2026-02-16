@@ -1,4 +1,4 @@
-# 🚀 Backend - Kanban
+# 🚀 Backend - Agenda de citas
 
 Este es el servidor de la aplicación, construido con **Node.js**, **Express** y **Prisma ORM**. Maneja la autenticación de usuarios, gestión de roles (User/Admin) y operaciones CRUD para proyectos.
 
